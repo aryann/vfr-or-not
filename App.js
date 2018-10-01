@@ -54,27 +54,6 @@ export default class Setup extends React.Component {
   }
 }
 
-const cards = [
-  {
-    station: 'KRNT',
-    metar:
-      'KRNT 231853Z 07003KT 10SM FEW026 FEW060 SCT100 BKN200 28/21 A2990 RMK AO2 SLP125 VCSH NE-E T02780211',
-    is_vfr: true,
-  },
-  {
-    station: 'KPAE',
-    metar:
-      'KPAE 231753Z 28004KT 10SM FEW130 FEW200 28/M08 A3006 RMK AO2 SLP095 T02831078 10283 20139 58010',
-    is_vfr: true,
-  },
-  {
-    station: 'KSEA',
-    metar:
-      'KSEA 231853Z VRB06KT 10SM FEW020 SCT060 16/07 A3018 RMK AO2 SLP225 T01610072',
-    is_vfr: false,
-  },
-];
-
 const NUM_CARDS_PER_GAME = 10;
 const AIRPORT_IDS = require('./data/airport-ids.json');
 const METAR_ENDPOINT =
@@ -82,11 +61,24 @@ const METAR_ENDPOINT =
   'dataSource=metars&requestType=retrieve&format=xml&' +
   'hoursBeforeNow=24&mostRecentForEachStation=true&stationString=';
 
-const pics = [
+const PICS = [
+  require('./images/pexels-photo-1046493.jpeg'),
+  require('./images/pexels-photo-104757.jpeg'),
+  require('./images/pexels-photo-1098745.jpeg'),
   require('./images/pexels-photo-113585.jpeg'),
+  require('./images/pexels-photo-126626.jpeg'),
+  require('./images/pexels-photo-1272392.jpeg'),
   require('./images/pexels-photo-1309644.jpeg'),
+  require('./images/pexels-photo-164589.jpeg'),
+  require('./images/pexels-photo-358220.jpeg'),
+  require('./images/pexels-photo-459402.jpeg'),
+  require('./images/pexels-photo-615060.jpeg'),
+  require('./images/pexels-photo-638698.jpeg'),
   require('./images/pexels-photo-723240.jpeg'),
+  require('./images/pexels-photo-726296.jpeg'),
+  require('./images/pexels-photo-728824.jpeg'),
   require('./images/pexels-photo-730778.jpeg'),
+  require('./images/pexels-photo-946841.jpeg'),
 ];
 
 const styles = StyleSheet.create({
@@ -249,17 +241,14 @@ class Game extends React.Component {
       gameState: GameState.fetching,
     };
     this.answers = [];
-    this.cards = cards;
-
     this.getCards();
-    console.log(this.cards);
   }
 
   addImagesToCards(cards) {
-    cards.forEach(card => {
-      var idx = Math.floor(Math.random() * Math.floor(pics.length));
-      card.image = pics[idx];
-    });
+    images = pickRandom(PICS, { count: cards.length });
+    for (i = 0; i < cards.length; i++) {
+      cards[i].image = images[i];
+    }
   }
 
   processMetarsFromApi(response) {
@@ -271,7 +260,6 @@ class Game extends React.Component {
         flight_category: metar.flight_category,
       });
     });
-    console.log(cards.length);
     this.addImagesToCards(cards);
     return cards;
   }
@@ -297,6 +285,8 @@ class Game extends React.Component {
       })
       .catch(error => {
         console.log('error', error);
+
+        // TODO(aryann): Fall back to a fixed set of cards if we can't get any data.
       });
   }
 
