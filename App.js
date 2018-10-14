@@ -60,7 +60,7 @@ export default class Setup extends React.Component {
   }
 }
 
-const NUM_CARDS_PER_GAME = 10;
+const NUM_CARDS_PER_GAME = 3;
 const AIRPORT_IDS = require('./data/airport-ids.json');
 const METAR_ENDPOINT =
   'https://www.aviationweather.gov/adds/dataserver_current/httpparam?' +
@@ -268,7 +268,6 @@ const GameState = Object.freeze({
   fetching: 0,
   playing: 1,
   done: 2,
-  reviewing: 3,
 });
 
 class Game extends React.Component {
@@ -413,12 +412,6 @@ class Game extends React.Component {
       this.getCards();
     };
 
-    let reviewAnswers = () => {
-      this.setState(prevState => ({
-        gameState: GameState.review,
-      }));
-    };
-
     let onSwipeLeft = item => {
       item.answer = 'IFR';
     };
@@ -509,34 +502,32 @@ class Game extends React.Component {
         )}
 
         {this.state.gameState === GameState.done && (
-          <Card style={{ elevation: 5 }}>
-            <CardItem bordered>
-              <Left>
-                <Body>{getResultText()}</Body>
-              </Left>
-            </CardItem>
-            <CardItem>
-              <Button
-                rounded
-                primary
-                style={{ marginRight: 5 }}
-                onPress={playAgain}
-              >
-                <Text>play again</Text>
-              </Button>
-              <Button rounded info onPress={reviewAnswers}>
-                <Text>review answers</Text>
-              </Button>
-            </CardItem>
-          </Card>
-        )}
+          <View>
+            <Card style={{ elevation: 5 }}>
+              <CardItem>
+                <Left>
+                  <Body>{getResultText()}</Body>
+                </Left>
 
-        {this.state.gameState === GameState.review && (
-          <FlatList
-            data={this.cards}
-            renderItem={renderAnswerCard}
-            keyExtractor={(item, index) => item.station}
-          />
+                <Right>
+                  <Button
+                    rounded
+                    primary
+                    style={{ marginRight: 5 }}
+                    onPress={playAgain}
+                  >
+                    <Text>play again</Text>
+                  </Button>
+                </Right>
+              </CardItem>
+            </Card>
+
+            <FlatList
+              data={this.cards}
+              renderItem={renderAnswerCard}
+              keyExtractor={(item, index) => item.station}
+            />
+          </View>
         )}
       </View>
     );
