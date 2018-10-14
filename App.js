@@ -1,7 +1,13 @@
 import React from 'react';
 import pickRandom from 'pick-random';
 import { parseString } from 'react-native-xml2js';
-import { Animated, FlatList, Image, PanResponder, StyleSheet } from 'react-native';
+import {
+  Animated,
+  FlatList,
+  Image,
+  PanResponder,
+  StyleSheet,
+} from 'react-native';
 import clamp from 'clamp';
 import getTheme from './native-base-theme/components';
 import {
@@ -80,7 +86,6 @@ const PICS = [
   require('./images/pexels-photo-730778.jpeg'),
   require('./images/pexels-photo-946841.jpeg'),
 ];
-
 
 class Swiper extends React.Component {
   constructor(props) {
@@ -215,22 +220,19 @@ class Swiper extends React.Component {
         right: 0,
       });
     }
-    
+
     return (
       <View>
         {this.state.currentIdx < this.props.cards.length - 1 && (
           <Animated.View
-             style={{ elevation: 5, transform: [{ scale: this.state.scale }] }}
+            style={{ elevation: 5, transform: [{ scale: this.state.scale }] }}
           >
             {this.props.renderItem(this.props.cards[this.state.currentIdx + 1])}
           </Animated.View>
         )}
 
         {this.state.currentIdx < this.props.cards.length && (
-          <Animated.View
-            style={bottomStyle}
-            {...this.panResponder.panHandlers}
-          >
+          <Animated.View style={bottomStyle} {...this.panResponder.panHandlers}>
             {this.props.renderItem(this.props.cards[this.state.currentIdx])}
           </Animated.View>
         )}
@@ -239,7 +241,12 @@ class Swiper extends React.Component {
   }
 }
 
-const GameState = Object.freeze({ fetching: 0, playing: 1, done: 2, reviewing: 3 });
+const GameState = Object.freeze({
+  fetching: 0,
+  playing: 1,
+  done: 2,
+  reviewing: 3,
+});
 
 class Game extends React.Component {
   constructor(props) {
@@ -262,8 +269,8 @@ class Game extends React.Component {
     cards = [];
     response.response.data.METAR.forEach(metar => {
       let flight_category;
-      if (metar.flight_category === "MVFR") {
-        flight_category = "VFR";
+      if (metar.flight_category === 'MVFR') {
+        flight_category = 'VFR';
       } else {
         flight_category = metar.flight_category;
       }
@@ -313,7 +320,7 @@ class Game extends React.Component {
       }
     }
     return num;
-  };
+  }
 
   render() {
     let renderMetar = item => (
@@ -324,7 +331,7 @@ class Game extends React.Component {
             source={item.image}
           />
         </CardItem>
-        <CardItem bordered>
+        <CardItem>
           <Body>
             <Text>{item.metar}</Text>
           </Body>
@@ -333,7 +340,7 @@ class Game extends React.Component {
     );
 
     let renderQuizCard = item => (
-      <Card>
+      <Card style={{ height: 380 }}>
         <CardItem bordered>
           <Left>
             <Body>
@@ -345,12 +352,14 @@ class Game extends React.Component {
       </Card>
     );
 
-    let renderAnswerCard = ({item}) => {
+    let renderAnswerCard = ({ item }) => {
       let correctState;
       if (item.flight_category === item.answer) {
-        correctState = <Icon name="md-checkmark-circle" style={{color: "green"}} />;
+        correctState = (
+          <Icon name="md-checkmark-circle" style={{ color: 'green' }} />
+        );
       } else {
-        correctState = <Icon name="md-close-circle" style={{color: "red"}} />;
+        correctState = <Icon name="md-close-circle" style={{ color: 'red' }} />;
       }
 
       return (
@@ -361,17 +370,15 @@ class Game extends React.Component {
                 <Text>{item.station}</Text>
               </Body>
             </Left>
-            <Right>
-              {correctState}
-            </Right>
+            <Right>{correctState}</Right>
           </CardItem>
           {renderMetar(item)}
           <CardItem bordered>
-          <Body>
-            <Text>Flight category: {item.flight_category}</Text>
-            <Text>Your answer: {item.answer}</Text>
-          </Body>
-        </CardItem>
+            <Body>
+              <Text>Flight category: {item.flight_category}</Text>
+              <Text>Your answer: {item.answer}</Text>
+            </Body>
+          </CardItem>
         </Card>
       );
     };
@@ -390,10 +397,10 @@ class Game extends React.Component {
     };
 
     let onSwipeLeft = item => {
-      item.answer = "IFR";
+      item.answer = 'IFR';
     };
     let onSwipeRight = item => {
-      item.answer = "VFR";
+      item.answer = 'VFR';
     };
 
     let onDone = () => {
@@ -407,8 +414,8 @@ class Game extends React.Component {
       if (numCorrect === 0) {
         return (
           <Text>
-            You didn't get any of the {this.cards.length} flight categories right.
-            Be safe out there!
+            You didn't get any of the {this.cards.length} flight categories
+            right. Be safe out there!
           </Text>
         );
       } else {
@@ -420,44 +427,56 @@ class Game extends React.Component {
       }
     };
 
-
     return (
       <View style={{ flex: 1 }} padder>
         {this.state.gameState === GameState.fetching && (
-          <Card style={{ elevation: 5 }}>
-            <Spinner />
-            <CardItem>
-              <Body>
-                <Text>Just a second while we
-                  dial <Text style={{ fontWeight: "bold" }}>aviationweather.gov</Text> to
-                  get the latest weather reports!</Text>
-              </Body>
-            </CardItem>
-          </Card>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <Card style={{ elevation: 5 }}>
+              <Spinner />
+              <CardItem>
+                <Body>
+                  <Text>
+                    Just a second while we dial{' '}
+                    <Text style={{ fontWeight: 'bold' }}>
+                      aviationweather.gov
+                    </Text>{' '}
+                    to get the latest weather reports!
+                  </Text>
+                </Body>
+              </CardItem>
+            </Card>
+          </View>
         )}
 
         {this.state.gameState === GameState.playing && (
-          <View style={{ flex: 1, flexDirection: "column" }}>
-            <View style={{ flex: 2 }}>
-              <Swiper
-                ref={c => (this.swiper = c)}
-                cards={this.cards}
-                renderItem={renderQuizCard}
-                onDone={onDone}
-                onSwipeRight={onSwipeRight}
-                onSwipeLeft={onSwipeLeft}
-              />
-            </View>
-            
-            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
-              <Button danger rounded>
-                <Icon name="arrow-back" />
-                <Text>IFR</Text>
-              </Button>
-              <Button success rounded>
-                <Text>VFR</Text>
-                <Icon name="arrow-forward" />
-              </Button>
+          <View style={{ flex: 1, justifyContent: 'center' }}>
+            <Swiper
+              ref={c => (this.swiper = c)}
+              cards={this.cards}
+              renderItem={renderQuizCard}
+              onDone={onDone}
+              onSwipeRight={onSwipeRight}
+              onSwipeLeft={onSwipeLeft}
+            />
+
+            <View style={{ height: 65 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+                padder
+              >
+                <Button danger rounded>
+                  <Icon name="arrow-back" />
+                  <Text>IFR</Text>
+                </Button>
+                <Button success rounded>
+                  <Text>VFR</Text>
+                  <Icon name="arrow-forward" />
+                </Button>
+              </View>
             </View>
           </View>
         )}
@@ -478,11 +497,7 @@ class Game extends React.Component {
               >
                 <Text>play again</Text>
               </Button>
-              <Button
-                rounded
-                info
-                onPress={reviewAnswers}
-              >
+              <Button rounded info onPress={reviewAnswers}>
                 <Text>review answers</Text>
               </Button>
             </CardItem>
@@ -495,7 +510,7 @@ class Game extends React.Component {
             renderItem={renderAnswerCard}
             keyExtractor={(item, index) => item.station}
           />
-      )}
+        )}
       </View>
     );
   }
