@@ -347,6 +347,18 @@ class Game extends React.Component {
   render() {
     let renderMetar = item => (
       <View>
+        <CardItem bordered>
+          <Left>
+            <Body>
+              <Text>{item.station}</Text>
+            </Body>
+          </Left>
+          <Right style={{ paddingRight: 10 }}>
+            <Text>
+              {item.index + 1}/{this.cards.length}
+            </Text>
+          </Right>
+        </CardItem>
         <CardItem>
           <Image
             style={{ width: null, height: 200, flex: 1, resizeMode: 'cover' }}
@@ -364,47 +376,34 @@ class Game extends React.Component {
     );
 
     let renderQuizCard = item => (
-      <Card style={{ height: 380 }}>
-        <CardItem bordered>
-          <Left>
-            <Body>
-              <Text>{item.station}</Text>
-            </Body>
-          </Left>
-          <Right style={{ paddingRight: 10}}>
-            <Text>{item.index + 1}/{this.cards.length}</Text>
-          </Right>
-        </CardItem>
-        {renderMetar(item)}
-      </Card>
+      <Card style={{ height: 380 }}>{renderMetar(item)}</Card>
     );
 
     let renderAnswerCard = ({ item }) => {
-      let correctState;
+      let icon;
       if (item.flight_category === item.answer) {
-        correctState = (
-          <Icon name="md-checkmark-circle" style={{ color: 'green' }} />
+        icon = (
+          <Icon
+            name="md-checkmark-circle"
+            style={{ color: 'green', fontSize: 16 }}
+          />
         );
       } else {
-        correctState = <Icon name="md-close-circle" style={{ color: 'red' }} />;
+        icon = (
+          <Icon name="md-close-circle" style={{ color: 'red', fontSize: 16 }} />
+        );
       }
 
       return (
         <Card>
-          <CardItem bordered>
-            <Left>
-              <Body>
-                <Text>{item.station}</Text>
-              </Body>
-            </Left>
-            <Right>{correctState}</Right>
-          </CardItem>
           {renderMetar(item)}
           <CardItem bordered>
             <Left>
               <Body>
                 <Text>Flight category: {item.flight_category}</Text>
-                <Text>Your answer: {item.answer}</Text>
+                <Text>
+                  Your answer: {item.answer} {icon}
+                </Text>
               </Body>
             </Left>
           </CardItem>
@@ -472,7 +471,7 @@ class Game extends React.Component {
         </Card>
       );
     };
- 
+
     return (
       <View style={{ flex: 1 }} padder>
         {this.state.gameState === GameState.fetching && (
@@ -496,7 +495,6 @@ class Game extends React.Component {
 
         {this.state.gameState === GameState.playing && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            
             <Swiper
               ref={c => (this.swiper = c)}
               cards={this.cards}
@@ -506,7 +504,7 @@ class Game extends React.Component {
               onSwipeLeft={onSwipeLeft}
             />
 
-            <View style={{ height: 65 }}>              
+            <View style={{ height: 65 }}>
               <View
                 style={{
                   flex: 1,
