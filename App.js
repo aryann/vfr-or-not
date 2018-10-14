@@ -28,7 +28,6 @@ import {
   Title,
   View,
 } from 'native-base';
-import SwipeCards from 'react-native-swipe-cards';
 
 export default class Setup extends React.Component {
   constructor() {
@@ -276,7 +275,6 @@ class Game extends React.Component {
     this.state = {
       gameState: GameState.fetching,
     };
-    this.answers = [];
     this.getCards();
   }
 
@@ -288,8 +286,9 @@ class Game extends React.Component {
   }
 
   processMetarsFromApi(response) {
-    cards = [];
-    response.response.data.METAR.forEach(metar => {
+    let cards = [];
+    for (let i = 0; i < response.response.data.METAR.length; i++) {
+      let metar = response.response.data.METAR[i];
       let flight_category;
       if (metar.flight_category === 'MVFR') {
         flight_category = 'VFR';
@@ -302,8 +301,9 @@ class Game extends React.Component {
         metar: metar.raw_text,
         flight_category: flight_category,
         answer: null,
+        index: i,
       });
-    });
+    }
     this.addImagesToCards(cards);
     return cards;
   }
@@ -354,9 +354,11 @@ class Game extends React.Component {
           />
         </CardItem>
         <CardItem>
-          <Body>
-            <Text>{item.metar}</Text>
-          </Body>
+          <Left>
+            <Body>
+              <Text>{item.metar}</Text>
+            </Body>
+          </Left>
         </CardItem>
       </View>
     );
@@ -369,6 +371,9 @@ class Game extends React.Component {
               <Text>{item.station}</Text>
             </Body>
           </Left>
+          <Right style={{ paddingRight: 10}}>
+            <Text>{item.index + 1}/{this.cards.length}</Text>
+          </Right>
         </CardItem>
         {renderMetar(item)}
       </Card>
@@ -396,10 +401,12 @@ class Game extends React.Component {
           </CardItem>
           {renderMetar(item)}
           <CardItem bordered>
-            <Body>
-              <Text>Flight category: {item.flight_category}</Text>
-              <Text>Your answer: {item.answer}</Text>
-            </Body>
+            <Left>
+              <Body>
+                <Text>Flight category: {item.flight_category}</Text>
+                <Text>Your answer: {item.answer}</Text>
+              </Body>
+            </Left>
           </CardItem>
         </Card>
       );
@@ -465,7 +472,7 @@ class Game extends React.Component {
         </Card>
       );
     };
-
+ 
     return (
       <View style={{ flex: 1 }} padder>
         {this.state.gameState === GameState.fetching && (
@@ -489,6 +496,7 @@ class Game extends React.Component {
 
         {this.state.gameState === GameState.playing && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
+            
             <Swiper
               ref={c => (this.swiper = c)}
               cards={this.cards}
@@ -498,7 +506,7 @@ class Game extends React.Component {
               onSwipeLeft={onSwipeLeft}
             />
 
-            <View style={{ height: 65 }}>
+            <View style={{ height: 65 }}>              
               <View
                 style={{
                   flex: 1,
