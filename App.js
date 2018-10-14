@@ -1,7 +1,7 @@
 import React from 'react';
 import pickRandom from 'pick-random';
 import { parseString } from 'react-native-xml2js';
-import { Animated, Image, PanResponder, StyleSheet } from 'react-native';
+import { Animated, FlatList, Image, PanResponder, StyleSheet } from 'react-native';
 import clamp from 'clamp';
 import getTheme from './native-base-theme/components';
 import {
@@ -54,7 +54,7 @@ export default class Setup extends React.Component {
   }
 }
 
-const NUM_CARDS_PER_GAME = 10;
+const NUM_CARDS_PER_GAME = 3;
 const AIRPORT_IDS = require('./data/airport-ids.json');
 const METAR_ENDPOINT =
   'https://www.aviationweather.gov/adds/dataserver_current/httpparam?' +
@@ -232,7 +232,7 @@ class Swiper extends React.Component {
   }
 }
 
-const GameState = Object.freeze({ fetching: 0, playing: 1, done: 2 });
+const GameState = Object.freeze({ fetching: 0, playing: 1, done: 2, reviewing: 3 });
 
 class Game extends React.Component {
   constructor(props) {
@@ -254,10 +254,18 @@ class Game extends React.Component {
   processMetarsFromApi(response) {
     cards = [];
     response.response.data.METAR.forEach(metar => {
+      let flight_category;
+      if (metar.flight_category === "MVFR") {
+        flight_category = "VFR";
+      } else {
+        flight_category = metar.flight_category;
+      }
+
       cards.push({
         station: metar.station_id,
         metar: metar.raw_text,
-        flight_category: metar.flight_category,
+        flight_category: flight_category,
+        answer: null,
       });
     });
     this.addImagesToCards(cards);
@@ -291,7 +299,23 @@ class Game extends React.Component {
   }
 
   render() {
-    let renderItem = item => (
+    let renderMetar = item => (
+      <View>
+        <CardItem>
+          <Image
+            style={{ width: null, height: 200, flex: 1, resizeMode: 'cover' }}
+            source={item.image}
+          />
+        </CardItem>
+        <CardItem bordered>
+          <Body>
+            <Text>{item.metar}</Text>
+          </Body>
+        </CardItem>
+      </View>
+    );
+
+    let renderQuizCard = item => (
       <Card>
         <CardItem bordered>
           <Left>
@@ -300,38 +324,59 @@ class Game extends React.Component {
             </Body>
           </Left>
         </CardItem>
-        <CardItem>
-          <Image
-            style={{ width: null, height: 200, flex: 1, resizeMode: 'cover' }}
-            source={item.image}
-          />
-        </CardItem>
-        <CardItem>
-          <Body>
-            <Text>{item.metar}</Text>
-          </Body>
-        </CardItem>
-        <CardItem bordered />
+        {renderMetar(item)}
       </Card>
     );
 
+    let renderAnswerCard = ({item}) => {
+      let correctState;
+      if (item.flight_category === item.answer) {
+        correctState = <Icon name="md-checkmark-circle" style={{color: "green"}} />;
+      } else {
+        correctState = <Icon name="md-close-circle" style={{color: "red"}} />;
+      }
+
+      return (
+        <Card>
+          <CardItem bordered>
+            <Left>
+              <Body>
+                <Text>{item.station}</Text>
+              </Body>
+            </Left>
+            <Right>
+              {correctState}
+            </Right>
+          </CardItem>
+          {renderMetar(item)}
+          <CardItem bordered>
+          <Body>
+            <Text>Flight category: {item.flight_category}</Text>
+            <Text>Your answer: {item.answer}</Text>
+          </Body>
+        </CardItem>
+        </Card>
+      );
+    };
+
     let playAgain = () => {
-      this.answers = [];
       this.setState(prevState => ({
-        gameState: GameState.playing,
+        gameState: GameState.fetching,
+      }));
+      this.getCards();
+    };
+
+    let reviewAnswers = () => {
+      this.setState(prevState => ({
+        gameState: GameState.review,
       }));
     };
 
-    let recordAnswer = isCorrect => {
-      this.answers.push(isCorrect);
-    };
     let onSwipeLeft = item => {
-      recordAnswer(item.flight_category === 'IFR');
+      item.answer = "IFR";
     };
     let onSwipeRight = item => {
-      recordAnswer(
-        item.flight_category === 'VFR' || item.flight_category === 'MVFR'
-      );
+      item.answer = "VFR";
     };
 
     let onDone = () => {
@@ -342,8 +387,8 @@ class Game extends React.Component {
 
     let numCorrect = () => {
       num = 0;
-      for (i = 0; i < this.answers.length; i++) {
-        if (this.answers[i]) {
+      for (i = 0; i < this.cards.length; i++) {
+        if (this.cards[i].flight_category === this.cards[i].answer) {
           num++;
         }
       }
@@ -352,13 +397,24 @@ class Game extends React.Component {
 
     return (
       <View style={{ flex: 1 }} padder>
-        {this.state.gameState === GameState.fetching && <Spinner />}
+        {this.state.gameState === GameState.fetching && (
+          <Card style={{ elevation: 5 }}>
+            <Spinner />
+            <CardItem>
+              <Body>
+                <Text>Just a second while we
+                  dial <Text style={{ fontWeight: "bold" }}>aviationweather.gov</Text> to
+                  get the latest weather reports!</Text>
+              </Body>
+            </CardItem>
+          </Card>
+        )}
 
         {this.state.gameState === GameState.playing && (
           <Swiper
             ref={c => (this.swiper = c)}
             cards={this.cards}
-            renderItem={renderItem}
+            renderItem={renderQuizCard}
             onDone={onDone}
             onSwipeRight={onSwipeRight}
             onSwipeLeft={onSwipeLeft}
@@ -371,7 +427,7 @@ class Game extends React.Component {
               <Left>
                 <Body>
                   <Text>
-                    You got {numCorrect()} out of {this.answers.length} right!
+                    You got {numCorrect()} out of {this.cards.length} right!
                   </Text>
                 </Body>
               </Left>
@@ -383,14 +439,27 @@ class Game extends React.Component {
                 style={{ marginRight: 5 }}
                 onPress={playAgain}
               >
-                <Text>Play again</Text>
+                <Text>play again</Text>
               </Button>
-              <Button rounded info>
+              <Button
+                rounded
+                info
+                onPress={reviewAnswers}
+              >
                 <Text>review answers</Text>
               </Button>
             </CardItem>
           </Card>
         )}
+
+        {this.state.gameState === GameState.review && (
+
+          <FlatList
+            data={this.cards}
+            renderItem={renderAnswerCard}
+            keyExtractor={(item, index) => item.station}
+          />
+      )}
       </View>
     );
   }
