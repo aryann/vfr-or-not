@@ -66,6 +66,8 @@ const METAR_ENDPOINT =
   'https://www.aviationweather.gov/adds/dataserver_current/httpparam?' +
   'dataSource=metars&requestType=retrieve&format=xml&' +
   'hoursBeforeNow=24&mostRecentForEachStation=true&stationString=';
+const FLIGHT_CATEGORIES_EXPLANATION =
+  'https://www.aviationweather.gov/taf/help?page=plot';
 
 const PICS = [
   require('./images/pexels-photo-1046493.jpeg'),
@@ -424,6 +426,16 @@ class Game extends React.Component {
       this.getCards();
     };
 
+    let getHelp = () => {
+      Linking.canOpenURL(FLIGHT_CATEGORIES_EXPLANATION).then(supported => {
+        if (supported) {
+          Linking.openURL(FLIGHT_CATEGORIES_EXPLANATION);
+        } else {
+          console.log('Could not open URL: ' + FLIGHT_CATEGORIES_EXPLANATION);
+        }
+      });
+    };
+
     let onSwipeLeft = item => {
       item.answer = 'IFR';
     };
@@ -501,6 +513,7 @@ class Game extends React.Component {
                           fontWeight: 'bold',
                           textDecorationLine: 'underline',
                         }}
+                        onPress={getHelp}
                       >
                         aviationweather.gov
                       </Text>{' '}
