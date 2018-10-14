@@ -62,6 +62,7 @@ export default class Setup extends React.Component {
 
 const NUM_CARDS_PER_GAME = 3;
 const AIRPORT_IDS = require('./data/airport-ids.json');
+const OFFLINE_METARS = require('./data/offline-metars.json');
 const METAR_ENDPOINT =
   'https://www.aviationweather.gov/adds/dataserver_current/httpparam?' +
   'dataSource=metars&requestType=retrieve&format=xml&' +
@@ -288,11 +289,10 @@ class Game extends React.Component {
     }
   }
 
-  processMetarsFromApi(response) {
+  processMetars(data) {
     let cards = [];
-    let metars = response.response.data.METAR;
-    metars = pickRandom(metars, {
-      count: Math.min(NUM_CARDS_PER_GAME, metars.length),
+    let metars = pickRandom(data, {
+      count: Math.min(NUM_CARDS_PER_GAME, data.length),
     });
     for (let i = 0; i < metars.length; i++) {
       let metar = metars[i];
@@ -332,18 +332,27 @@ class Game extends React.Component {
       .then(response => response.text())
       .then(response => {
         parseString(response, { explicitArray: false }, (error, result) => {
-          console.log('Response:', result);
-          this.cards = this.processMetarsFromApi(result);
-          // TODO(aryann): Fail if this.cards is empty.
+          let metars;
+          if (error || result.response.data.METAR.length < NUM_CARDS_PER_GAME) {
+            metars = OFFLINE_METARS;
+            console.log('Using offline METARs due to error:', error);
+          } else {
+            console.log('Using METARs from aviationweather.gov.');
+            metars = result.response.data.METAR;
+          }
+
+          this.cards = this.processMetars(metars);
           this.setState(prevState => {
             return { gameState: GameState.ready };
           });
         });
       })
       .catch(error => {
-        console.log('error', error);
-
-        // TODO(aryann): Fall back to a fixed set of cards if we can't get any data.
+        console.log('Using offline METARs due to error:', error);
+        this.cards = this.processMetars(OFFLINE_METARS);
+        this.setState(prevState => {
+          return { gameState: GameState.ready };
+        });
       });
   }
 
