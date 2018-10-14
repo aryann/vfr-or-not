@@ -5,6 +5,7 @@ import {
   Animated,
   FlatList,
   Image,
+  Linking,
   PanResponder,
   StyleSheet,
 } from 'react-native';
@@ -113,7 +114,6 @@ class Swiper extends React.Component {
         // what is happening!
 
         // gestureState.d{x,y} will be set to zero now
-        //console.log(event);
       },
       onPanResponderMove: (event, gestureState) => {
         // The most recent move distance is gestureState.move{X,Y}
@@ -320,11 +320,7 @@ class Game extends React.Component {
         parseString(response, { explicitArray: false }, (error, result) => {
           console.log('Response:', result);
           this.cards = this.processMetarsFromApi(result);
-          if (this.cards.length > 0) {
-            this.setState(prevState => {
-              return { gameState: GameState.playing };
-            });
-          }
+          // TODO(aryann): Fail if this.cards is empty.
         });
       })
       .catch(error => {
@@ -343,7 +339,7 @@ class Game extends React.Component {
     }
     return num;
   }
-
+  
   render() {
     let renderMetar = item => (
       <View>
@@ -411,6 +407,13 @@ class Game extends React.Component {
       );
     };
 
+    let start = () => {
+      console.log("START");
+      this.setState(prevState => {
+        return { gameState: GameState.playing };
+      });
+    };
+    
     let playAgain = () => {
       this.setState(prevState => ({
         gameState: GameState.fetching,
@@ -477,17 +480,38 @@ class Game extends React.Component {
         {this.state.gameState === GameState.fetching && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <Card style={{ elevation: 3 }}>
-              <Spinner />
               <CardItem>
-                <Body>
-                  <Text>
-                    Just a second while we dial{' '}
-                    <Text style={{ fontWeight: 'bold' }}>
-                      aviationweather.gov
-                    </Text>{' '}
-                    to get the latest weather reports!
-                  </Text>
-                </Body>
+                <Left>
+                  <Body>
+                    <Text style={{ marginBottom: 16 }}>
+                      We'll show you METARs, you decide the flight category.
+                      Swipe right for Visual Flight Rules, swipe left for
+                      Instrument Flight Rules!
+                    </Text>
+
+                    <Text style={{ marginBottom: 16 }}>
+                      Checkout{' '}
+                      <Text
+                        style={{
+                          color: 'blue',
+                          fontWeight: 'bold',
+                          textDecorationLine: 'underline',
+                        }}
+                      >
+                        aviationweather.gov
+                      </Text>{' '}
+                      if you need a refresher on flight categories.
+                    </Text>
+
+                    <Text style={{ marginBottom: 16 }}>
+                      Information displayed is not intended for flight planning.
+                    </Text>
+
+                    <Button onPress={start} success rounded>
+                      <Text>Let's do this!</Text>
+                    </Button>
+                  </Body>
+                </Left>
               </CardItem>
             </Card>
           </View>
