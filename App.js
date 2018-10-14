@@ -290,8 +290,12 @@ class Game extends React.Component {
 
   processMetarsFromApi(response) {
     let cards = [];
-    for (let i = 0; i < response.response.data.METAR.length; i++) {
-      let metar = response.response.data.METAR[i];
+    let metars = response.response.data.METAR;
+    metars = pickRandom(metars, {
+      count: Math.min(NUM_CARDS_PER_GAME, metars.length),
+    });
+    for (let i = 0; i < metars.length; i++) {
+      let metar = metars[i];
       let flight_category;
       if (metar.flight_category === 'MVFR') {
         flight_category = 'VFR';
@@ -312,9 +316,16 @@ class Game extends React.Component {
   }
 
   getCards() {
-    airports = pickRandom(AIRPORT_IDS, { count: NUM_CARDS_PER_GAME });
-    airportsQueryParam = airports.join(',');
-    endpoint = METAR_ENDPOINT + airportsQueryParam;
+    this.cards = [];
+
+    // The aviationweather.gov endpoint does not always return as many
+    // METARs as we ask for, so here, we ask for more than we need,
+    // and perform another pickRandom() call with the real data to
+    // pick exactly the number of METARs as we want.
+    let airports = pickRandom(AIRPORT_IDS, { count: NUM_CARDS_PER_GAME * 2 });
+
+    let airportsQueryParam = airports.join(',');
+    let endpoint = METAR_ENDPOINT + airportsQueryParam;
     console.log('Sending request to: ', endpoint);
 
     fetch(endpoint)
