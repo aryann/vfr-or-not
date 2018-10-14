@@ -318,6 +318,10 @@ class Game extends React.Component {
   getCards() {
     this.cards = [];
 
+    // TODO(aryann): Figure out how to add a timeout to the fetch()
+    // call, so we can fail faster if aviationweather.gov is being
+    // slow.
+
     // The aviationweather.gov endpoint does not always return as many
     // METARs as we ask for, so here, we ask for more than we need,
     // and perform another pickRandom() call with the real data to
