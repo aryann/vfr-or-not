@@ -222,7 +222,7 @@ class Swiper extends React.Component {
   render() {
     let bottomStyle = [
       {
-        elevation: 5,
+        elevation: 3,
         transform: [
           { translateX: this.state.pan.x },
           { translateY: this.state.pan.y },
@@ -248,7 +248,7 @@ class Swiper extends React.Component {
       <View>
         {this.state.currentIdx < this.props.cards.length - 1 && (
           <Animated.View
-            style={{ elevation: 5, transform: [{ scale: this.state.scale }] }}
+            style={{ elevation: 3, transform: [{ scale: this.state.scale }] }}
           >
             {this.props.renderItem(this.props.cards[this.state.currentIdx + 1])}
           </Animated.View>
@@ -447,7 +447,7 @@ class Game extends React.Component {
       <View style={{ flex: 1 }} padder>
         {this.state.gameState === GameState.fetching && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Card style={{ elevation: 5 }}>
+            <Card style={{ elevation: 3 }}>
               <Spinner />
               <CardItem>
                 <Body>
@@ -503,7 +503,7 @@ class Game extends React.Component {
 
         {this.state.gameState === GameState.done && (
           <View>
-            <Card style={{ elevation: 5 }}>
+            <Card style={{ elevation: 3 }}>
               <CardItem>
                 <Left>
                   <Body>{getResultText()}</Body>
