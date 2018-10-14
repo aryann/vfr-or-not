@@ -265,8 +265,9 @@ class Swiper extends React.Component {
 
 const GameState = Object.freeze({
   fetching: 0,
-  playing: 1,
-  done: 2,
+  ready: 1,
+  playing: 2,
+  done: 3,
 });
 
 class Game extends React.Component {
@@ -321,6 +322,9 @@ class Game extends React.Component {
           console.log('Response:', result);
           this.cards = this.processMetarsFromApi(result);
           // TODO(aryann): Fail if this.cards is empty.
+          this.setState(prevState => {
+            return { gameState: GameState.ready };
+          });
         });
       })
       .catch(error => {
@@ -339,7 +343,7 @@ class Game extends React.Component {
     }
     return num;
   }
-  
+
   render() {
     let renderMetar = item => (
       <View>
@@ -408,12 +412,11 @@ class Game extends React.Component {
     };
 
     let start = () => {
-      console.log("START");
       this.setState(prevState => {
         return { gameState: GameState.playing };
       });
     };
-    
+
     let playAgain = () => {
       this.setState(prevState => ({
         gameState: GameState.fetching,
@@ -477,9 +480,10 @@ class Game extends React.Component {
 
     return (
       <View style={{ flex: 1 }} padder>
-        {this.state.gameState === GameState.fetching && (
+        {(this.state.gameState === GameState.fetching ||
+          this.state.gameState === GameState.ready) && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Card style={{ elevation: 3 }}>
+            <Card style={{ elevation: 3, height: 280 }}>
               <CardItem>
                 <Left>
                   <Body>
@@ -507,9 +511,25 @@ class Game extends React.Component {
                       Information displayed is not intended for flight planning.
                     </Text>
 
-                    <Button onPress={start} success rounded>
-                      <Text>Let's do this!</Text>
-                    </Button>
+                    <View style={{ height: 65 }}>
+                      <View
+                        style={{
+                          flex: 1,
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {this.state.gameState === GameState.fetching && (
+                          <Spinner />
+                        )}
+
+                        {this.state.gameState === GameState.ready && (
+                          <Button onPress={start} success rounded>
+                            <Text>Let's do this!</Text>
+                          </Button>
+                        )}
+                      </View>
+                    </View>
                   </Body>
                 </Left>
               </CardItem>
