@@ -81,15 +81,6 @@ const PICS = [
   require('./images/pexels-photo-946841.jpeg'),
 ];
 
-const styles = StyleSheet.create({
-  card: {
-    elevation: 5,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-});
 
 class Swiper extends React.Component {
   constructor(props) {
@@ -201,11 +192,35 @@ class Swiper extends React.Component {
   }
 
   render() {
+    let bottomStyle = [
+      {
+        elevation: 5,
+        transform: [
+          { translateX: this.state.pan.x },
+          { translateY: this.state.pan.y },
+        ],
+      },
+    ];
+
+    // Use an absolute position on the the card that is covered by the
+    // top card, so it stays under the top card. However, do not use
+    // an absolute position when "the bottom card" is the last card,
+    // otherwise other UI elements will take the place of the pile of
+    // cards.
+    if (this.state.currentIdx < this.props.cards.length - 1) {
+      bottomStyle.push({
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+      });
+    }
+    
     return (
       <View>
         {this.state.currentIdx < this.props.cards.length - 1 && (
           <Animated.View
-            style={[styles.card, { transform: [{ scale: this.state.scale }] }]}
+             style={{ elevation: 5, transform: [{ scale: this.state.scale }] }}
           >
             {this.props.renderItem(this.props.cards[this.state.currentIdx + 1])}
           </Animated.View>
@@ -213,15 +228,7 @@ class Swiper extends React.Component {
 
         {this.state.currentIdx < this.props.cards.length && (
           <Animated.View
-            style={[
-              styles.card,
-              {
-                transform: [
-                  { translateX: this.state.pan.x },
-                  { translateY: this.state.pan.y },
-                ],
-              },
-            ]}
+            style={bottomStyle}
             {...this.panResponder.panHandlers}
           >
             {this.props.renderItem(this.props.cards[this.state.currentIdx])}
@@ -411,14 +418,29 @@ class Game extends React.Component {
         )}
 
         {this.state.gameState === GameState.playing && (
-          <Swiper
-            ref={c => (this.swiper = c)}
-            cards={this.cards}
-            renderItem={renderQuizCard}
-            onDone={onDone}
-            onSwipeRight={onSwipeRight}
-            onSwipeLeft={onSwipeLeft}
-          />
+          <View style={{ flex: 1, flexDirection: "column" }}>
+            <View style={{ flex: 2 }}>
+              <Swiper
+                ref={c => (this.swiper = c)}
+                cards={this.cards}
+                renderItem={renderQuizCard}
+                onDone={onDone}
+                onSwipeRight={onSwipeRight}
+                onSwipeLeft={onSwipeLeft}
+              />
+            </View>
+            
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between" }}>
+              <Button danger rounded>
+                <Icon name="arrow-back" />
+                <Text>IFR</Text>
+              </Button>
+              <Button success rounded>
+                <Text>VFR</Text>
+                <Icon name="arrow-forward" />
+              </Button>
+            </View>
+          </View>
         )}
 
         {this.state.gameState === GameState.done && (
@@ -453,7 +475,6 @@ class Game extends React.Component {
         )}
 
         {this.state.gameState === GameState.review && (
-
           <FlatList
             data={this.cards}
             renderItem={renderAnswerCard}
