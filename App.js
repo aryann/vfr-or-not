@@ -60,7 +60,7 @@ export default class Setup extends React.Component {
   }
 }
 
-const NUM_CARDS_PER_GAME = 3;
+const NUM_CARDS_PER_GAME = 10;
 const AIRPORT_IDS = require('./data/airport-ids.json');
 const METAR_ENDPOINT =
   'https://www.aviationweather.gov/adds/dataserver_current/httpparam?' +
@@ -125,20 +125,19 @@ class Swiper extends React.Component {
           toValue: Math.min(0.8 + Math.abs(gestureState.dx) / 1000, 1),
           friction: 7,
         }).start();
-        Animated.event([null, { dx: this.state.pan.x }])(event, gestureState);
+        Animated.event([null, { dx: this.state.pan.x, dy: this.state.pan.y }])(
+          event,
+          gestureState
+        );
       },
       onPanResponderTerminationRequest: (event, gestureState) => true,
       onPanResponderRelease: (event, gestureState) => {
-        velocity =
-          (gestureState.vx < 0 ? -1 : 1) *
+        vx =
+          (this.state.pan.x._value < 0 ? -1 : 1) *
           clamp(Math.abs(gestureState.vx), 5, 10);
 
-        if (Math.abs(this.state.pan.x._value) > 100) {
-          this.callListeners(velocity);
-          Animated.decay(this.state.pan, {
-            velocity: { x: velocity, y: gestureState.vy },
-            deceleration: 0.98,
-          }).start(this.advance.bind(this));
+        if (Math.abs(this.state.pan.x._value) > 150) {
+          this.swipe(vx, gestureState.vy);
         } else {
           Animated.spring(this.state.pan, {
             toValue: { x: 0, y: 0 },
@@ -156,6 +155,30 @@ class Swiper extends React.Component {
         return true;
       },
     });
+  }
+
+  swipe(vx, vy) {
+    this.callListeners(vx);
+    Animated.decay(this.state.pan, {
+      velocity: { x: vx, y: vy },
+      deceleration: 0.98,
+    }).start(this.advance.bind(this));
+  }
+
+  swipeLeft() {
+    this.swipe(-8, 0);
+    Animated.spring(this.state.scale, {
+      toValue: 1,
+      friction: 7,
+    }).start();
+  }
+
+  swipeRight() {
+    this.swipe(8, 0);
+    Animated.spring(this.state.scale, {
+      toValue: 1,
+      friction: 7,
+    }).start();
   }
 
   resetAnimationState() {
@@ -468,11 +491,15 @@ class Game extends React.Component {
                 }}
                 padder
               >
-                <Button danger rounded>
+                <Button onPress={() => this.swiper.swipeLeft()} danger rounded>
                   <Icon name="arrow-back" />
                   <Text>IFR</Text>
                 </Button>
-                <Button success rounded>
+                <Button
+                  onPress={() => this.swiper.swipeRight()}
+                  success
+                  rounded
+                >
                   <Text>VFR</Text>
                   <Icon name="arrow-forward" />
                 </Button>
