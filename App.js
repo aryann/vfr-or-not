@@ -443,6 +443,29 @@ class Game extends React.Component {
       }
     };
 
+    let renderResultsHeader = () => {
+      return (
+        <Card style={{ elevation: 3 }}>
+          <CardItem>
+            <Left>
+              <Body>{getResultText()}</Body>
+            </Left>
+
+            <Right>
+              <Button
+                rounded
+                primary
+                style={{ marginRight: 5 }}
+                onPress={playAgain}
+              >
+                <Text>play again</Text>
+              </Button>
+            </Right>
+          </CardItem>
+        </Card>
+      );
+    };
+
     return (
       <View style={{ flex: 1 }} padder>
         {this.state.gameState === GameState.fetching && (
@@ -502,32 +525,12 @@ class Game extends React.Component {
         )}
 
         {this.state.gameState === GameState.done && (
-          <View>
-            <Card style={{ elevation: 3 }}>
-              <CardItem>
-                <Left>
-                  <Body>{getResultText()}</Body>
-                </Left>
-
-                <Right>
-                  <Button
-                    rounded
-                    primary
-                    style={{ marginRight: 5 }}
-                    onPress={playAgain}
-                  >
-                    <Text>play again</Text>
-                  </Button>
-                </Right>
-              </CardItem>
-            </Card>
-
-            <FlatList
-              data={this.cards}
-              renderItem={renderAnswerCard}
-              keyExtractor={(item, index) => item.station}
-            />
-          </View>
+          <FlatList
+            data={this.cards}
+            renderItem={renderAnswerCard}
+            ListHeaderComponent={renderResultsHeader}
+            keyExtractor={(item, index) => item.station}
+          />
         )}
       </View>
     );
