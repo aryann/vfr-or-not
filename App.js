@@ -60,7 +60,7 @@ export default class Setup extends React.Component {
   }
 }
 
-const NUM_CARDS_PER_GAME = 3;
+const NUM_CARDS_PER_GAME = 10;
 const AIRPORT_IDS = require('./data/airport-ids.json');
 const OFFLINE_METARS = require('./data/offline-metars.json');
 const METAR_ENDPOINT =
