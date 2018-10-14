@@ -305,6 +305,16 @@ class Game extends React.Component {
       });
   }
 
+  numCorrect() {
+    let num = 0;
+    for (i = 0; i < this.cards.length; i++) {
+      if (this.cards[i].flight_category === this.cards[i].answer) {
+        num++;
+      }
+    }
+    return num;
+  };
+
   render() {
     let renderMetar = item => (
       <View>
@@ -392,15 +402,24 @@ class Game extends React.Component {
       }));
     };
 
-    let numCorrect = () => {
-      num = 0;
-      for (i = 0; i < this.cards.length; i++) {
-        if (this.cards[i].flight_category === this.cards[i].answer) {
-          num++;
-        }
+    let getResultText = () => {
+      let numCorrect = this.numCorrect();
+      if (numCorrect === 0) {
+        return (
+          <Text>
+            You didn't get any of the {this.cards.length} flight categories right.
+            Be safe out there!
+          </Text>
+        );
+      } else {
+        return (
+          <Text>
+            You got {numCorrect} out of {this.cards.length} right!
+          </Text>
+        );
       }
-      return num;
     };
+
 
     return (
       <View style={{ flex: 1 }} padder>
@@ -447,11 +466,7 @@ class Game extends React.Component {
           <Card style={{ elevation: 5 }}>
             <CardItem bordered>
               <Left>
-                <Body>
-                  <Text>
-                    You got {numCorrect()} out of {this.cards.length} right!
-                  </Text>
-                </Body>
+                <Body>{getResultText()}</Body>
               </Left>
             </CardItem>
             <CardItem>
