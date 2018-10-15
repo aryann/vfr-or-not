@@ -504,30 +504,36 @@ class Game extends React.Component {
       }));
     };
 
-    let getResultText = () => {
-      let numCorrect = this.numCorrect();
-      if (numCorrect === 0) {
-        return (
-          <Text>
-            You didn't get any of the {this.cards.length} flight categories
-            right. Be safe out there!
-          </Text>
-        );
-      } else {
-        return (
-          <Text>
-            You got {numCorrect} out of {this.cards.length} right!
-          </Text>
-        );
-      }
+    let renderResultsHeader = () => {
+      return renderPlayAgainBox(() => {
+        let numCorrect = this.numCorrect();
+        if (numCorrect === 0) {
+          return (
+            <Text>
+              You didn't get any of the {this.cards.length} flight categories
+              right. Be safe out there!
+            </Text>
+          );
+        } else {
+          return (
+            <Text>
+              You got {numCorrect} out of {this.cards.length} right!
+            </Text>
+          );
+        }
+      });
     };
 
-    let renderResultsHeader = () => {
+    let renderResultsFooter = () => {
+      return renderPlayAgainBox(() => <Text>That's all for now!</Text>);
+    };
+
+    let renderPlayAgainBox = textFunction => {
       return (
         <Card style={{ elevation: 2 }}>
           <CardItem>
             <Left>
-              <Body>{getResultText()}</Body>
+              <Body>{textFunction()}</Body>
             </Left>
 
             <Right>
@@ -647,6 +653,7 @@ class Game extends React.Component {
             data={this.cards}
             renderItem={renderAnswerCard}
             ListHeaderComponent={renderResultsHeader}
+            ListFooterComponent={renderResultsFooter}
             keyExtractor={(item, index) => item.station}
             showsVerticalScrollIndicator={false}
           />
