@@ -25,7 +25,9 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "app.aryann.vfrornot"
+      "package": "app.aryann.vfrornot",
+      "permissions": [],
+      "versionCode": 2
     }
   }
 }
