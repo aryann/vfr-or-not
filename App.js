@@ -328,10 +328,12 @@ class Game extends React.Component {
     for (let i = 0; i < metars.length; i++) {
       let metar = metars[i];
       let flight_category;
-      if (metar.flight_category === 'MVFR') {
+      if (metar.flight_category.endsWith('VFR')) {
         flight_category = 'VFR';
       } else {
-        flight_category = metar.flight_category;
+        flight_category = 'IFR';
+        // TODO(aryann): Probably should at least log if the flight
+        // category does not end in "VFR" or "IFR".
       }
 
       cards.push({
