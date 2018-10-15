@@ -8,10 +8,12 @@ import {
   Linking,
   PanResponder,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import clamp from 'clamp';
 import getTheme from './native-base-theme/components';
 import {
+  Root,
   Body,
   Button,
   Container,
@@ -29,6 +31,7 @@ import {
   Title,
   View,
 } from 'native-base';
+import { Constants } from 'expo';
 
 export default class Setup extends React.Component {
   constructor() {
@@ -37,9 +40,11 @@ export default class Setup extends React.Component {
       isReady: false,
     };
   }
+
   componentWillMount() {
     this.loadFonts();
   }
+
   async loadFonts() {
     await Expo.Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
@@ -48,6 +53,7 @@ export default class Setup extends React.Component {
     });
     this.setState({ isReady: true });
   }
+
   render() {
     if (!this.state.isReady) {
       return <Expo.AppLoading />;
@@ -249,7 +255,7 @@ class Swiper extends React.Component {
   render() {
     let bottomStyle = [
       {
-        elevation: 3,
+        elevation: 2,
         transform: [
           { translateX: this.state.pan.x },
           { translateY: this.state.pan.y },
@@ -275,7 +281,7 @@ class Swiper extends React.Component {
       <View>
         {this.state.currentIdx < this.props.cards.length - 1 && (
           <Animated.View
-            style={{ elevation: 3, transform: [{ scale: this.state.scale }] }}
+            style={{ elevation: 2, transform: [{ scale: this.state.scale }] }}
           >
             {this.props.renderItem(this.props.cards[this.state.currentIdx + 1])}
           </Animated.View>
@@ -404,7 +410,7 @@ class Game extends React.Component {
               <Text>{item.station}</Text>
             </Body>
           </Left>
-          <Right style={{ paddingRight: 10 }}>
+          <Right>
             <Text>
               {item.index + 1}/{this.cards.length}
             </Text>
@@ -427,7 +433,7 @@ class Game extends React.Component {
     );
 
     let renderQuizCard = item => (
-      <Card style={{ height: 380 }}>{renderMetar(item)}</Card>
+      <Card style={{ elevation: 2, height: 380 }}>{renderMetar(item)}</Card>
     );
 
     let renderAnswerCard = ({ item }) => {
@@ -446,7 +452,7 @@ class Game extends React.Component {
       }
 
       return (
-        <Card>
+        <Card style={{ elevation: 2 }}>
           {renderMetar(item)}
           <CardItem bordered>
             <Left>
@@ -518,7 +524,7 @@ class Game extends React.Component {
 
     let renderResultsHeader = () => {
       return (
-        <Card style={{ elevation: 3 }}>
+        <Card style={{ elevation: 2 }}>
           <CardItem>
             <Left>
               <Body>{getResultText()}</Body>
@@ -540,11 +546,11 @@ class Game extends React.Component {
     };
 
     return (
-      <View style={{ flex: 1 }} padder>
+      <View style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}>
         {(this.state.gameState === GameState.fetching ||
           this.state.gameState === GameState.ready) && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
-            <Card style={{ elevation: 3, height: 280 }}>
+            <Card style={{ elevation: 2, height: 280 }}>
               <CardItem>
                 <Left>
                   <Body>
@@ -642,6 +648,7 @@ class Game extends React.Component {
             renderItem={renderAnswerCard}
             ListHeaderComponent={renderResultsHeader}
             keyExtractor={(item, index) => item.station}
+            showsVerticalScrollIndicator={false}
           />
         )}
       </View>
@@ -653,6 +660,9 @@ class App extends React.Component {
   render() {
     return (
       <Container>
+        <View
+          style={{ backgroundColor: 'blue', height: Constants.statusBarHeight }}
+        />
         <Header>
           <Left />
           <Body>
