@@ -420,6 +420,7 @@ class Game extends React.Component {
           <Image
             style={{ width: null, height: 200, flex: 1, resizeMode: 'cover' }}
             source={item.image}
+            resizeMethod="resize"
           />
         </CardItem>
         <CardItem>
