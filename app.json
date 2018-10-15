@@ -11,8 +11,9 @@
     "icon": "./icon/playstore/icon.png",
     "splash": {
       "resizeMode": "contain",
-      "backgroundColor": "white"
+      "backgroundColor": "#3F51B5"
     },
+    "primaryColor": "#3F51B5",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -22,6 +23,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "app.aryann.vfrornot"
     }
   }
 }
