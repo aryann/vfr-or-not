@@ -27,7 +27,7 @@
     "android": {
       "package": "app.aryann.vfrornot",
       "permissions": [],
-      "versionCode": 2
+      "versionCode": 3
     }
   }
 }
