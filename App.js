@@ -1,6 +1,6 @@
-import React from 'react';
-import pickRandom from 'pick-random';
-import { parseString } from 'react-native-xml2js';
+import React from "react";
+import pickRandom from "pick-random";
+import { parseString } from "react-native-xml2js";
 import {
   Animated,
   FlatList,
@@ -9,9 +9,9 @@ import {
   PanResponder,
   StyleSheet,
   StatusBar,
-} from 'react-native';
-import clamp from 'clamp';
-import getTheme from './native-base-theme/components';
+} from "react-native";
+import clamp from "clamp";
+import getTheme from "./native-base-theme/components";
 import {
   Root,
   Body,
@@ -30,8 +30,8 @@ import {
   Text,
   Title,
   View,
-} from 'native-base';
-import { Constants } from 'expo';
+} from "native-base";
+import { Constants } from "expo";
 
 export default class Setup extends React.Component {
   constructor() {
@@ -47,9 +47,9 @@ export default class Setup extends React.Component {
 
   async loadFonts() {
     await Expo.Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-      Ionicons: require('@expo/vector-icons/fonts/Ionicons.ttf'),
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
     this.setState({ isReady: true });
   }
@@ -67,58 +67,58 @@ export default class Setup extends React.Component {
 }
 
 const NUM_CARDS_PER_GAME = 10;
-const AIRPORT_IDS = require('./data/airport-ids.json');
-const OFFLINE_METARS = require('./data/offline-metars.json');
+const AIRPORT_IDS = require("./data/airport-ids.json");
+const OFFLINE_METARS = require("./data/offline-metars.json");
 const METAR_ENDPOINT =
-  'https://www.aviationweather.gov/adds/dataserver_current/httpparam?' +
-  'dataSource=metars&requestType=retrieve&format=xml&' +
-  'hoursBeforeNow=24&mostRecentForEachStation=true&stationString=';
+  "https://www.aviationweather.gov/adds/dataserver_current/httpparam?" +
+  "dataSource=metars&requestType=retrieve&format=xml&" +
+  "hoursBeforeNow=24&mostRecentForEachStation=true&stationString=";
 const FLIGHT_CATEGORIES_EXPLANATION =
-  'https://www.aviationweather.gov/taf/help?page=plot';
+  "https://www.aviationweather.gov/taf/help?page=plot";
 
 const PICS = [
-  require('./images/0001.jpg'),
-  require('./images/0002.jpg'),
-  require('./images/0003.jpg'),
-  require('./images/0004.jpg'),
-  require('./images/0005.jpg'),
-  require('./images/0006.jpg'),
-  require('./images/0007.jpg'),
-  require('./images/0008.jpg'),
-  require('./images/0009.jpg'),
-  require('./images/0010.jpg'),
-  require('./images/0011.jpg'),
-  require('./images/0012.jpg'),
-  require('./images/0013.jpg'),
-  require('./images/0014.jpg'),
-  require('./images/0015.jpg'),
-  require('./images/0016.jpg'),
-  require('./images/0017.jpg'),
-  require('./images/0018.jpg'),
-  require('./images/0019.jpg'),
-  require('./images/0020.jpg'),
-  require('./images/0021.jpg'),
-  require('./images/0022.jpg'),
-  require('./images/0023.jpg'),
-  require('./images/0024.jpg'),
-  require('./images/0025.jpg'),
-  require('./images/0026.jpg'),
-  require('./images/0027.jpg'),
-  require('./images/0028.jpg'),
-  require('./images/0029.jpg'),
-  require('./images/0030.jpg'),
-  require('./images/0031.jpg'),
-  require('./images/0032.jpg'),
-  require('./images/0033.jpg'),
-  require('./images/0034.jpg'),
-  require('./images/0035.jpg'),
-  require('./images/0036.jpg'),
-  require('./images/0037.jpg'),
-  require('./images/0038.jpg'),
-  require('./images/0039.jpg'),
-  require('./images/0040.jpg'),
-  require('./images/0041.jpg'),
-  require('./images/0042.jpg'),
+  require("./images/0001.jpg"),
+  require("./images/0002.jpg"),
+  require("./images/0003.jpg"),
+  require("./images/0004.jpg"),
+  require("./images/0005.jpg"),
+  require("./images/0006.jpg"),
+  require("./images/0007.jpg"),
+  require("./images/0008.jpg"),
+  require("./images/0009.jpg"),
+  require("./images/0010.jpg"),
+  require("./images/0011.jpg"),
+  require("./images/0012.jpg"),
+  require("./images/0013.jpg"),
+  require("./images/0014.jpg"),
+  require("./images/0015.jpg"),
+  require("./images/0016.jpg"),
+  require("./images/0017.jpg"),
+  require("./images/0018.jpg"),
+  require("./images/0019.jpg"),
+  require("./images/0020.jpg"),
+  require("./images/0021.jpg"),
+  require("./images/0022.jpg"),
+  require("./images/0023.jpg"),
+  require("./images/0024.jpg"),
+  require("./images/0025.jpg"),
+  require("./images/0026.jpg"),
+  require("./images/0027.jpg"),
+  require("./images/0028.jpg"),
+  require("./images/0029.jpg"),
+  require("./images/0030.jpg"),
+  require("./images/0031.jpg"),
+  require("./images/0032.jpg"),
+  require("./images/0033.jpg"),
+  require("./images/0034.jpg"),
+  require("./images/0035.jpg"),
+  require("./images/0036.jpg"),
+  require("./images/0037.jpg"),
+  require("./images/0038.jpg"),
+  require("./images/0039.jpg"),
+  require("./images/0040.jpg"),
+  require("./images/0041.jpg"),
+  require("./images/0042.jpg"),
 ];
 
 class Swiper extends React.Component {
@@ -270,7 +270,7 @@ class Swiper extends React.Component {
     // cards.
     if (this.state.currentIdx < this.props.cards.length - 1) {
       bottomStyle.push({
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
         right: 0,
@@ -322,18 +322,23 @@ class Game extends React.Component {
 
   processMetars(data) {
     let cards = [];
+
+    // TODO(aryann): Instead of picking NUM_CARDS_PER_GAME items here,
+    // start processing all items and draw the first
+    // NUM_CARDS_PER_GAME that have all of the data we need. That way,
+    // if the online data is corrupt, then the caller can fall back to
+    // the offline data that we know are good.
     let metars = pickRandom(data, {
       count: Math.min(NUM_CARDS_PER_GAME, data.length),
     });
+
     for (let i = 0; i < metars.length; i++) {
       let metar = metars[i];
       let flight_category;
-      if (metar.flight_category.endsWith('VFR')) {
-        flight_category = 'VFR';
+      if (metar.flight_category.endsWith("VFR")) {
+        flight_category = "VFR";
       } else {
-        flight_category = 'IFR';
-        // TODO(aryann): Probably should at least log if the flight
-        // category does not end in "VFR" or "IFR".
+        flight_category = "IFR";
       }
 
       cards.push({
@@ -361,10 +366,13 @@ class Game extends React.Component {
     // pick exactly the number of METARs as we want.
     let airports = pickRandom(AIRPORT_IDS, { count: NUM_CARDS_PER_GAME * 2 });
 
-    let airportsQueryParam = airports.join(',');
+    let airportsQueryParam = airports.join(",");
     let endpoint = METAR_ENDPOINT + airportsQueryParam;
-    console.log('Sending request to: ', endpoint);
+    console.log("Sending request to: ", endpoint);
 
+    // TODO(aryann): This call to fetch() can hang for a really long
+    // time in some cases. If this takes more than ~10s, we should
+    // just bail and fall back to the offline data.
     fetch(endpoint)
       .then(response => response.text())
       .then(response => {
@@ -372,9 +380,9 @@ class Game extends React.Component {
           let metars;
           if (error || result.response.data.METAR.length < NUM_CARDS_PER_GAME) {
             metars = OFFLINE_METARS;
-            console.log('Using offline METARs due to error:', error);
+            console.log("Using offline METARs due to error:", error);
           } else {
-            console.log('Using METARs from aviationweather.gov.');
+            console.log("Using METARs from aviationweather.gov.");
             metars = result.response.data.METAR;
           }
 
@@ -385,7 +393,7 @@ class Game extends React.Component {
         });
       })
       .catch(error => {
-        console.log('Using offline METARs due to error:', error);
+        console.log("Using offline METARs due to error:", error);
         this.cards = this.processMetars(OFFLINE_METARS);
         this.setState(prevState => {
           return { gameState: GameState.ready };
@@ -420,7 +428,7 @@ class Game extends React.Component {
         </CardItem>
         <CardItem>
           <Image
-            style={{ width: null, height: 200, flex: 1, resizeMode: 'cover' }}
+            style={{ width: null, height: 200, flex: 1, resizeMode: "cover" }}
             source={item.image}
             resizeMethod="resize"
           />
@@ -445,12 +453,12 @@ class Game extends React.Component {
         icon = (
           <Icon
             name="md-checkmark-circle"
-            style={{ color: 'green', fontSize: 16 }}
+            style={{ color: "green", fontSize: 16 }}
           />
         );
       } else {
         icon = (
-          <Icon name="md-close-circle" style={{ color: 'red', fontSize: 16 }} />
+          <Icon name="md-close-circle" style={{ color: "red", fontSize: 16 }} />
         );
       }
 
@@ -489,16 +497,16 @@ class Game extends React.Component {
         if (supported) {
           Linking.openURL(FLIGHT_CATEGORIES_EXPLANATION);
         } else {
-          console.log('Could not open URL: ' + FLIGHT_CATEGORIES_EXPLANATION);
+          console.log("Could not open URL: " + FLIGHT_CATEGORIES_EXPLANATION);
         }
       });
     };
 
     let onSwipeLeft = item => {
-      item.answer = 'IFR';
+      item.answer = "IFR";
     };
     let onSwipeRight = item => {
-      item.answer = 'VFR';
+      item.answer = "VFR";
     };
 
     let onDone = () => {
@@ -558,7 +566,7 @@ class Game extends React.Component {
       <View style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}>
         {(this.state.gameState === GameState.fetching ||
           this.state.gameState === GameState.ready) && (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <Card style={{ elevation: 2, height: 280 }}>
               <CardItem>
                 <Left>
@@ -570,17 +578,17 @@ class Game extends React.Component {
                     </Text>
 
                     <Text style={{ marginBottom: 16 }}>
-                      Check out{' '}
+                      Check out{" "}
                       <Text
                         style={{
-                          color: 'blue',
-                          fontWeight: 'bold',
-                          textDecorationLine: 'underline',
+                          color: "blue",
+                          fontWeight: "bold",
+                          textDecorationLine: "underline",
                         }}
                         onPress={getHelp}
                       >
                         aviationweather.gov
-                      </Text>{' '}
+                      </Text>{" "}
                       if you need a refresher on flight categories.
                     </Text>
 
@@ -592,8 +600,8 @@ class Game extends React.Component {
                       <View
                         style={{
                           flex: 1,
-                          flexDirection: 'row',
-                          justifyContent: 'center',
+                          flexDirection: "row",
+                          justifyContent: "center",
                         }}
                       >
                         {this.state.gameState === GameState.fetching && (
@@ -615,7 +623,7 @@ class Game extends React.Component {
         )}
 
         {this.state.gameState === GameState.playing && (
-          <View style={{ flex: 1, justifyContent: 'center' }}>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <Swiper
               ref={c => (this.swiper = c)}
               cards={this.cards}
@@ -629,8 +637,8 @@ class Game extends React.Component {
               <View
                 style={{
                   flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
                 padder
               >
@@ -671,7 +679,7 @@ class App extends React.Component {
     return (
       <Container>
         <View
-          style={{ backgroundColor: 'blue', height: Constants.statusBarHeight }}
+          style={{ backgroundColor: "blue", height: Constants.statusBarHeight }}
         />
         <Header>
           <Left />
