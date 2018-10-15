@@ -567,7 +567,7 @@ class Game extends React.Component {
                     </Text>
 
                     <Text style={{ marginBottom: 16 }}>
-                      Checkout{' '}
+                      Check out{' '}
                       <Text
                         style={{
                           color: 'blue',
@@ -599,7 +599,7 @@ class Game extends React.Component {
 
                         {this.state.gameState === GameState.ready && (
                           <Button onPress={start} success rounded>
-                            <Text>Let's do this!</Text>
+                            <Text>Let's get started!</Text>
                           </Button>
                         )}
                       </View>
