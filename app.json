@@ -22,10 +22,11 @@
       "images/*"
     ],
     "ios": {
+      "bundleIdentifier": "app.aryan.vfrornot",
       "supportsTablet": true
     },
     "android": {
-      "package": "app.aryann.vfrornot",
+      "package": "app.aryan.vfrornot",
       "permissions": [],
       "versionCode": 4
     }
