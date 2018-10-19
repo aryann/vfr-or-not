@@ -3,6 +3,7 @@ import pickRandom from "pick-random";
 import { parseString } from "react-native-xml2js";
 import {
   Animated,
+  AsyncStorage,
   FlatList,
   Image,
   Linking,
@@ -81,6 +82,7 @@ const METAR_ENDPOINT =
   "hoursBeforeNow=24&mostRecentForEachStation=true&stationString=";
 const FLIGHT_CATEGORIES_EXPLANATION =
   "https://www.aviationweather.gov/taf/help?page=plot";
+const GAME_RESULTS_KEY_PREFIX = "results:";
 
 const PICS = [
   require("./images/0001.jpg"),
@@ -361,11 +363,13 @@ class Game extends React.Component {
   setCards(metars) {
     this.cards = this.processMetars(metars);
     this.setState(prevState => {
+      this.readyAtMillis = Date.now();
       return { gameState: GameState.ready };
     });
   }
 
   getCards() {
+    this.fetchStartMillis = Date.now();
     this.cards = [];
 
     // TODO(aryann): Figure out how to add a timeout to the fetch()
@@ -519,14 +523,34 @@ class Game extends React.Component {
       });
     };
 
-    let onSwipeLeft = item => {
-      item.answer = "IFR";
+    let recordAnswer = (item, answer) => {
+      item.answer = answer;
+      item.answered_at_millis = Date.now();
     };
+
+    let onSwipeLeft = item => {
+      recordAnswer(item, "IFR");
+    };
+
     let onSwipeRight = item => {
-      item.answer = "VFR";
+      recordAnswer(item, "VFR");
     };
 
     let onDone = () => {
+      let resultsKey = GAME_RESULTS_KEY_PREFIX + this.readyAtMillis;
+      AsyncStorage.setItem(
+        resultsKey,
+        JSON.stringify({
+          fetchStartMillis: this.fetchStartMillis,
+          readyAtMillis: this.readyAtMillis,
+          gameResults: this.cards,
+        }),
+        error => {
+          if (error) {
+            console.log("Failed to persist data.", error);
+          }
+        }
+      );
       this.setState(prevState => ({
         gameState: GameState.done,
       }));
