@@ -67,6 +67,12 @@ export default class Setup extends React.Component {
 }
 
 const NUM_CARDS_PER_GAME = 10;
+
+// The maximum amount of time we wait for aviationweather.gov to
+// return with data. If this timeout is execeeded, then the offline
+// data are used.
+const FETCH_TIMEOUT_MS = 6000;
+
 const AIRPORT_IDS = require("./data/airport-ids.json");
 const OFFLINE_METARS = require("./data/offline-metars.json");
 const METAR_ENDPOINT =
@@ -352,6 +358,13 @@ class Game extends React.Component {
     return cards;
   }
 
+  setCards(metars) {
+    this.cards = this.processMetars(metars);
+    this.setState(prevState => {
+      return { gameState: GameState.ready };
+    });
+  }
+
   getCards() {
     this.cards = [];
 
@@ -369,12 +382,23 @@ class Game extends React.Component {
     let endpoint = METAR_ENDPOINT + airportsQueryParam;
     console.log("Sending request to: ", endpoint);
 
-    // TODO(aryann): This call to fetch() can hang for a really long
-    // time in some cases. If this takes more than ~10s, we should
-    // just bail and fall back to the offline data.
+    let timer = setTimeout(() => {
+      console.log("Using offline METARs because the HTTP request timed out.");
+      this.setCards(OFFLINE_METARS);
+    }, FETCH_TIMEOUT_MS);
+
     fetch(endpoint)
       .then(response => response.text())
       .then(response => {
+        // If the timeout hasn't fired yet, then clear it and consume
+        // these results. Otherwise, exit because we've exhausted the
+        // timeout and already decided to use the offline data.
+        if (this.cards.length == 0) {
+          clearTimeout(timer);
+        } else {
+          return;
+        }
+
         parseString(response, { explicitArray: false }, (error, result) => {
           let metars;
           if (error || result.response.data.METAR.length < NUM_CARDS_PER_GAME) {
@@ -385,18 +409,12 @@ class Game extends React.Component {
             metars = result.response.data.METAR;
           }
 
-          this.cards = this.processMetars(metars);
-          this.setState(prevState => {
-            return { gameState: GameState.ready };
-          });
+          this.setCards(metars);
         });
       })
       .catch(error => {
         console.log("Using offline METARs due to error:", error);
-        this.cards = this.processMetars(OFFLINE_METARS);
-        this.setState(prevState => {
-          return { gameState: GameState.ready };
-        });
+        this.setCards(OFFLINE_METARS);
       });
   }
 
