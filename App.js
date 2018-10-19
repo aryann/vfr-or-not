@@ -191,11 +191,10 @@ class Swiper extends React.Component {
   }
 
   swipe(vx, vy) {
-    this.callListeners(vx);
     Animated.decay(this.state.pan, {
       velocity: { x: vx, y: vy },
       deceleration: 0.98,
-    }).start(this.advance.bind(this));
+    }).start(this.advance.bind(this, vx));
   }
 
   swipeLeft() {
@@ -220,18 +219,18 @@ class Swiper extends React.Component {
     this.state.scale.setValue(0.8);
   }
 
-  advance() {
+  advance(vx) {
     this.resetAnimationState();
-    this.setState(
-      prevState => ({
-        currentIdx: prevState.currentIdx + 1,
-      }),
-      () => {
-        if (this.state.currentIdx == this.props.cards.length) {
-          this.props.onDone();
-        }
+    this.setState(prevState => {
+      this.callListeners(vx);
+      let newIdx = this.state.currentIdx + 1;
+      if (newIdx == this.props.cards.length) {
+        this.props.onDone();
       }
-    );
+      return {
+        currentIdx: newIdx,
+      };
+    });
   }
 
   reset() {
