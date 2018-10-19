@@ -630,7 +630,7 @@ class Game extends React.Component {
                       >
                         aviationweather.gov
                       </Text>{" "}
-                      if you need a refresher on flight categories.
+                      for a refresher on flight categories.
                     </Text>
 
                     <Text style={{ marginBottom: 16 }}>
